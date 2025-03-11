@@ -9,12 +9,13 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import icons from '@/icons'; // 导入图标模块
 
 const app = createApp(App) // 创建 Vue 3 应用实例
+// 注册自定义 SVG 图标组件
+icons(app); // 确保执行 icons 模块的注册逻辑
 // 注册图标组件
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
-// 注册自定义 SVG 图标组件
-icons(app); // 确保执行 icons 模块的注册逻辑
+
 app.use(router) // 统一使用 use() 注册插件
 
 app.use(ElementPlus)

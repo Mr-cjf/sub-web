@@ -40,7 +40,7 @@
                       <el-option v-for="item in group.options" :key="item.value" :label="item.label"
                         :value="item.value"></el-option>
                     </el-option-group>
-                    <template #append>
+                    <template slot="append">
                       <el-button icon="el-icon-link" @click="gotoRemoteConfig">配置示例</el-button>
                     </template>
                   </el-select>
@@ -63,7 +63,9 @@
                   </el-input>
                   <el-input v-model="param.value" placeholder="自定义参数内容">
                     <template #suffix>
-                      <el-button icon="el-icon-delete" style="margin-right: 5px" type="text" @click="customParams.splice(i, 1)"/>
+                      <el-button style="margin-right: 5px" type="test" @click="customParams.splice(i, 1)">
+                        <el-icon><Minus /></el-icon>
+                      </el-button>
                     </template>
                   </el-input>
                 </el-form-item>
@@ -123,7 +125,7 @@
                       </template>
                       <template #reference>
                         <el-button style="margin-left: 10px" @click="addCustomParam">
-                          <i class="el-icon-plus"></i>
+                          <el-icon><Plus /></el-icon>
                         </el-button>
                       </template>
                     </el-popover>
@@ -147,7 +149,7 @@
               <el-form-item label="订阅短链:">
                 <el-input v-model="curtomShortSubUrl" class="copy-content" disabled>
                   <template #append>
-                    <el-button ref="copy-btn" icon="el-icon-document-copy" @click="copyShortUrl">复制</el-button>
+                    <el-button ref="copy-btn" icon="el-icon-document-copy" @click="copyText(curtomShortSubUrl)">复制</el-button>
                   </template>
                 </el-input>
               </el-form-item>
@@ -157,7 +159,6 @@
                   @click="makeUrl">生成订阅链接</el-button>
                 <el-button :disabled="customSubUrl.length === 0" :loading="loading" style="width: 140px" type="danger"
                   @click="makeShortUrl">生成短链接</el-button>
-                <!-- <el-button style="width: 140px" type="primary" @click="surgeInstall" icon="el-icon-connection">一键导入Surge</el-button> -->
               </el-form-item>
 
               <el-form-item label-width="0px" style="text-align: center">
@@ -223,9 +224,10 @@
   </div>
 </template>
 
+
 <script>
 import SvgIcon from "../components/SvgIcon/index.vue";
-
+import { Delete } from '@element-plus/icons-vue';
 const project = import.meta.env.VITE_APP_PROJECT
 const remoteConfigSample = import.meta.env.VITE_APP_SUBCONVERTER_REMOTE_CONFIG
 const subDocAdvanced = import.meta.env.VITE_APP_SUBCONVERTER_DOC_ADVANCED
@@ -237,7 +239,7 @@ const tgBotLink = import.meta.env.VITE_APP_BOT_LINK
 
 export default {
   name: 'Subconverter',
-  components: {SvgIcon},
+  components: {SvgIcon,Delete},
   data() {
     return {
       backendVersion: "",
@@ -404,12 +406,6 @@ export default {
     this.getBackendVersion();
   },
   methods: {
-    onCopy() {
-      this.$message.success("Copied!");
-    },
-    onCopyError() {
-      this.$message.error("Copy failed!");
-    },
     goToProject() {
       window.open(project);
     },
@@ -434,15 +430,6 @@ export default {
             : this.customSubUrl
         )
       );
-    },
-    surgeInstall() {
-      if (this.customSubUrl === "") {
-        this.$message.error("请先填写必填项，生成订阅链接");
-        return false;
-      }
-
-      const url = "surge://install-config?url=";
-      window.open(url + this.customSubUrl);
     },
     addCustomParam(){
       this.customParams.push({
@@ -558,7 +545,7 @@ export default {
             this.$message.error("短链接获取失败：" + res.data.Message);
           }
         })
-        .catch(error => {
+        .catch(() => {
           this.$message.error("短链接获取失败");
         })
         .finally(() => {
@@ -591,7 +578,7 @@ export default {
 
           // 自动填充至『表单-远程配置』
           this.form.remoteConfig = res.data.data.url;
-          this.$copyText(this.form.remoteConfig);
+          this.copyText(this.form.remoteConfig);
 
           this.dialogUploadConfigVisible = false;
         } else {
@@ -779,9 +766,9 @@ export default {
       }
       localStorage.setItem(itemKey, JSON.stringify(data))
     },
-    copyShortUrl() {
-      navigator.clipboard.writeText(this.curtomShortSubUrl)
-          .then(() => this.$message.success("短链接已复制到剪贴板"))
+    copyText(text) {
+      navigator.clipboard.writeText(text)
+          .then(() => this.$message.success("复制成功"))
           .catch(() => this.$message.error("复制失败"));
     },
   },
