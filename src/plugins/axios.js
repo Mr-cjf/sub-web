@@ -1,6 +1,11 @@
-import Vue from 'vue'
-import axios from "axios"
+// src/plugins/axios.js
+import axios from 'axios';
 
-axios.defaults.timeout = 5000 //请求超时的时间设定
-
-Vue.prototype.$axios = axios
+// Vue 3 插件格式：导出带 install 方法的对象
+export default {
+  install(app) { // app 是 Vue 3 的应用实例
+    axios.defaults.timeout = 5000;
+    // 通过 app.config.globalProperties 挂载全局属性
+    app.config.globalProperties.$axios = axios;
+  }
+};

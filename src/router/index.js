@@ -1,19 +1,18 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
+import { createRouter, createWebHistory } from 'vue-router';
 
-Vue.use(VueRouter);
+// 修改后：
+const files = import.meta.glob('../views/*.vue');
 
-const routes = [
-  {
-    path: "/",
-    name: "SubConverter",
-    component: () => import("../views/Subconverter.vue")
-  }
-];
+const routes = Object.entries(files).map(([path, component]) => ({
+  path: path.includes('Subconverter')
+      ? '/'
+      : `/${path.replace(/(.*\/)|(\.vue)/g, '').replace(/^\w/, c => c.toLowerCase())}`,
+  name: path.replace(/(.*\/)|(\.vue)/g, '').toLowerCase(), // 统一转小写
+  component: () => component()
+}));
 
-const router = new VueRouter({
-  mode: "history",
-  base: process.env.BASE_URL,
+const router = createRouter({
+  history: createWebHistory(),
   routes
 });
 

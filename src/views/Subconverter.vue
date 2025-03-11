@@ -3,12 +3,12 @@
     <el-row style="margin-top: 10px">
       <el-col>
         <el-card>
-          <div slot="header">
+          <template #header>
             Subscription Converter
             <svg-icon icon-class="github" style="margin-left: 20px" @click="goToProject" />
 
             <div style="display: inline-block; position:absolute; right: 20px">{{ backendVersion }}</div>
-          </div>
+          </template>
           <el-container>
             <el-form :model="form" label-position="left" label-width="140px" style="width: 100%">
               <el-form-item label="模式设置:">
@@ -16,7 +16,7 @@
                 <el-radio v-model="advanced" label="2">进阶模式</el-radio>
               </el-form-item>
               <el-form-item label="订阅链接:">
-                <el-input v-model="form.sourceSubUrl" placeholder="支持订阅或ss/ssr/vmess链接，多个链接每行一个或用 | 分隔" rows="3"
+                <el-input v-model="form.sourceSubUrl" :rows="3" placeholder="支持订阅或ss/ssr/vmess链接，多个链接每行一个或用 | 分隔"
                   type="textarea" @blur="saveSubUrl" />
               </el-form-item>
               <el-form-item label="客户端:">
@@ -29,7 +29,9 @@
                 <el-form-item label="后端地址:">
                   <el-autocomplete v-model="form.customBackend" :fetch-suggestions="backendSearch" placeholder="动动小手，（建议）自行搭建后端服务。例：http://127.0.0.1:25500/sub?"
                     style="width: 100%">
-                    <el-button slot="append" icon="el-icon-link" @click="gotoGayhub">前往项目仓库</el-button>
+                    <template #append>
+                      <el-button icon="el-icon-link" @click="gotoGayhub">前往项目仓库</el-button>
+                    </template>
                   </el-autocomplete>
                 </el-form-item>
                 <el-form-item label="远程配置:">
@@ -38,7 +40,9 @@
                       <el-option v-for="item in group.options" :key="item.value" :label="item.label"
                         :value="item.value"></el-option>
                     </el-option-group>
-                    <el-button slot="append" icon="el-icon-link" @click="gotoRemoteConfig">配置示例</el-button>
+                    <template #append>
+                      <el-button icon="el-icon-link" @click="gotoRemoteConfig">配置示例</el-button>
+                    </template>
                   </el-select>
                 </el-form-item>
                 <el-form-item label="Include:">
@@ -53,10 +57,14 @@
 
                 <el-form-item v-for="(param, i) in customParams" :key="i">
                   <el-input slot="label" v-model="param.name" placeholder="自定义参数名">
-                    <div slot="suffix" style="width: 10px;">:</div>
+                    <template #suffix>
+                      <div style="width: 10px;">:</div>
+                    </template>
                   </el-input>
                   <el-input v-model="param.value" placeholder="自定义参数内容">
-                      <el-button slot="suffix" icon="el-icon-delete" style="margin-right: 5px" type="text" @click="customParams.splice(i, 1)"/>
+                    <template #suffix>
+                      <el-button icon="el-icon-delete" style="margin-right: 5px" type="text" @click="customParams.splice(i, 1)"/>
+                    </template>
                   </el-input>
                 </el-form-item>
 
@@ -66,46 +74,58 @@
                       <el-checkbox v-model="form.nodeList" border label="输出为 Node List"></el-checkbox>
                     </el-col>
                     <el-popover v-model="form.extraset" placement="bottom">
-                      <el-row>
-                        <el-checkbox v-model="form.emoji" label="Emoji"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.scv" label="跳过证书验证"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.udp" label="启用 UDP" @change="needUdp = true"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.appendType" label="节点类型"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.sort" label="排序节点"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.fdn" label="过滤非法节点"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.expand" label="规则展开"></el-checkbox>
-                      </el-row>
-                      <el-button slot="reference">更多选项</el-button>
+                      <template #default>
+                        <el-row>
+                          <el-checkbox v-model="form.emoji" label="Emoji"></el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox v-model="form.scv" label="跳过证书验证"></el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox v-model="form.udp" label="启用 UDP" @change="needUdp = true"></el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox v-model="form.appendType" label="节点类型"></el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox v-model="form.sort" label="排序节点"></el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox v-model="form.fdn" label="过滤非法节点"></el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox v-model="form.expand" label="规则展开"></el-checkbox>
+                        </el-row>
+                      </template>
+                      <template #reference>
+                        <el-button>更多选项</el-button>
+                      </template>
                     </el-popover>
                     <el-popover placement="bottom" style="margin-left: 10px">
-                      <el-row>
-                        <el-checkbox v-model="form.tpl.surge.doh" label="Surge.DoH"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.tpl.clash.doh" label="Clash.DoH"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.insert" label="网易云"></el-checkbox>
-                      </el-row>
-                      <el-button slot="reference">定制功能</el-button>
+                      <template #default>
+                        <el-row>
+                          <el-checkbox v-model="form.tpl.surge.doh" label="Surge.DoH"></el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox v-model="form.tpl.clash.doh" label="Clash.DoH"></el-checkbox>
+                        </el-row>
+                        <el-row>
+                          <el-checkbox v-model="form.insert" label="网易云"></el-checkbox>
+                        </el-row>
+                      </template>
+                      <template #reference>
+                        <el-button>定制功能</el-button>
+                      </template>
                     </el-popover>
                     <el-popover placement="top-end" title="添加自定义转换参数" trigger="hover">
-                      <el-link :href="subDocAdvanced" icon="el-icon-info" target="_blank" type="primary">参考文档</el-link>
-                      <el-button slot="reference" style="margin-left: 10px" @click="addCustomParam">
-                        <i class="el-icon-plus"></i>
-                      </el-button>
+                      <template #default>
+                        <el-link :href="subDocAdvanced" icon="el-icon-info" target="_blank" type="primary">参考文档</el-link>
+                      </template>
+                      <template #reference>
+                        <el-button style="margin-left: 10px" @click="addCustomParam">
+                          <i class="el-icon-plus"></i>
+                        </el-button>
+                      </template>
                     </el-popover>
                   </el-row>
                 </el-form-item>
@@ -119,14 +139,16 @@
 
               <el-form-item label="定制订阅:">
                 <el-input v-model="customSubUrl" class="copy-content" disabled>
-                  <el-button ref="copy-btn" slot="append" v-clipboard:copy="customSubUrl" v-clipboard:success="onCopy"
-                    icon="el-icon-document-copy">复制</el-button>
+                  <template #append>
+                    <el-button icon="el-icon-document-copy" @click="copyText(customSubUrl)">复制</el-button>
+                  </template>
                 </el-input>
               </el-form-item>
               <el-form-item label="订阅短链:">
                 <el-input v-model="curtomShortSubUrl" class="copy-content" disabled>
-                  <el-button ref="copy-btn" slot="append" v-clipboard:copy="curtomShortSubUrl"
-                    v-clipboard:success="onCopy" icon="el-icon-document-copy">复制</el-button>
+                  <template #append>
+                    <el-button ref="copy-btn" icon="el-icon-document-copy" @click="copyShortUrl">复制</el-button>
+                  </template>
                 </el-input>
               </el-form-item>
 
@@ -156,55 +178,66 @@
 
     <el-dialog :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false"
       :visible.sync="dialogUploadConfigVisible" width="700px">
-      <div slot="title">
+      <template #header>
         Remote config upload
         <el-popover placement="right" style="margin-left: 10px" trigger="hover">
-          <el-link :href="sampleConfig" icon="el-icon-info" target="_blank" type="primary">参考配置</el-link>
-          <i slot="reference" class="el-icon-question"></i>
+          <template #default>
+            <el-link :href="sampleConfig" icon="el-icon-info" target="_blank" type="primary">参考配置</el-link>
+          </template>
+          <template #reference>
+            <i class="el-icon-question"></i>
+          </template>
         </el-popover>
-      </div>
+      </template>
       <el-form label-position="left">
         <el-form-item prop="uploadConfig">
           <el-input v-model="uploadConfig" :autosize="{ minRows: 15, maxRows: 30 }" maxlength="10000" show-word-limit
             type="textarea"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="uploadConfig = ''; dialogUploadConfigVisible = false">取 消</el-button>
-        <el-button :disabled="uploadConfig.length === 0" type="primary" @click="confirmUploadConfig">确 定</el-button>
-      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="uploadConfig = ''; dialogUploadConfigVisible = false">取 消</el-button>
+          <el-button :disabled="uploadConfig.length === 0" type="primary" @click="confirmUploadConfig">确 定</el-button>
+        </span>
+      </template>
     </el-dialog>
 
     <el-dialog :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false"
       :visible.sync="dialogLoadConfigVisible" width="700px">
-      <div slot="title">
+      <template #header>
         解析 Subconverter 链接
-      </div>
+      </template>
       <el-form :inline="true" label-position="left" >
         <el-form-item label="订阅链接：" label-width="85px" prop="uploadConfig">
           <el-input v-model="loadConfig" style="width: 565px"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="loadConfig = ''; dialogLoadConfigVisible = false">取 消</el-button>
-        <el-button :disabled="loadConfig.length === 0" type="primary" @click="confirmLoadConfig">确 定</el-button>
-      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="loadConfig = ''; dialogLoadConfigVisible = false">取 消</el-button>
+          <el-button :disabled="loadConfig.length === 0" type="primary" @click="confirmLoadConfig">确 定</el-button>
+        </span>
+      </template>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-const project = process.env.VUE_APP_PROJECT
-const remoteConfigSample = process.env.VUE_APP_SUBCONVERTER_REMOTE_CONFIG
-const subDocAdvanced = process.env.VUE_APP_SUBCONVERTER_DOC_ADVANCED
-const gayhubRelease = process.env.VUE_APP_BACKEND_RELEASE
-const defaultBackend = process.env.VUE_APP_SUBCONVERTER_DEFAULT_BACKEND + '/sub?'
-const shortUrlBackend = process.env.VUE_APP_MYURLS_API
-const configUploadBackend = process.env.VUE_APP_CONFIG_UPLOAD_API
-const tgBotLink = process.env.VUE_APP_BOT_LINK
+import SvgIcon from "../components/SvgIcon/index.vue";
+
+const project = import.meta.env.VITE_APP_PROJECT
+const remoteConfigSample = import.meta.env.VITE_APP_SUBCONVERTER_REMOTE_CONFIG
+const subDocAdvanced = import.meta.env.VITE_APP_SUBCONVERTER_DOC_ADVANCED
+const gayhubRelease = import.meta.env.VITE_APP_BACKEND_RELEASE
+const defaultBackend = import.meta.env.VITE_APP_SUBCONVERTER_DEFAULT_BACKEND + '/sub?'
+const shortUrlBackend = import.meta.env.VITE_APP_MYURLS_API
+const configUploadBackend = import.meta.env.VITE_APP_CONFIG_UPLOAD_API
+const tgBotLink = import.meta.env.VITE_APP_BOT_LINK
 
 export default {
+  name: 'Subconverter',
+  components: {SvgIcon},
   data() {
     return {
       backendVersion: "",
@@ -361,7 +394,7 @@ export default {
     this.isPC = this.$getOS().isPc;
 
     // 获取 url cache
-    if (process.env.VUE_APP_USE_STORAGE === 'true') {
+    if (import.meta.env.VITE_APP_USE_STORAGE === 'true') {
       this.form.sourceSubUrl = this.getLocalStorageItem('sourceSubUrl')
     }
   },
@@ -373,6 +406,9 @@ export default {
   methods: {
     onCopy() {
       this.$message.success("Copied!");
+    },
+    onCopyError() {
+      this.$message.error("Copy failed!");
     },
     goToProject() {
       window.open(project);
@@ -495,9 +531,10 @@ export default {
           this.customSubUrl += `&${encodeURIComponent(param.name)}=${encodeURIComponent(param.value)}`
         })
       }
-
-      this.$copyText(this.customSubUrl);
-      this.$message.success("定制订阅已复制到剪贴板");
+      console.log(this.customSubUrl)
+      navigator.clipboard.writeText(this.customSubUrl)
+          .then(() => this.$message.success("复制成功"))
+          .catch(() => this.$message.error("复制失败"));
     },
     makeShortUrl() {
       if (this.customSubUrl === "") {
@@ -509,23 +546,19 @@ export default {
 
       let data = new FormData();
       data.append("longUrl", btoa(this.customSubUrl));
-
       this.$axios
-        .post(shortUrlBackend, data, {
-          header: {
-            "Content-Type": "application/form-data; charset=utf-8"
-          }
-        })
+        .post(shortUrlBackend, data)
         .then(res => {
           if (res.data.Code === 1 && res.data.ShortUrl !== "") {
             this.curtomShortSubUrl = res.data.ShortUrl;
-            this.$copyText(res.data.ShortUrl);
-            this.$message.success("短链接已复制到剪贴板");
+            navigator.clipboard.writeText(res.data.ShortUrl)
+                .then(() => this.$message.success("短链接已复制到剪贴板"))
+                .catch(() => this.$message.error("复制失败"));
           } else {
             this.$message.error("短链接获取失败：" + res.data.Message);
           }
         })
-        .catch(() => {
+        .catch(error => {
           this.$message.error("短链接获取失败");
         })
         .finally(() => {
@@ -533,16 +566,10 @@ export default {
         });
     },
     notify() {
-      const h = this.$createElement;
-
       this.$notify({
         title: "隐私提示",
         type: "warning",
-        message: h(
-          "i",
-          { style: "color: teal" },
-          "各种订阅链接（短链接服务除外）生成纯前端实现，无隐私问题。默认提供后端转换服务，隐私担忧者请自行搭建后端服务。"
-        )
+        message: "各种订阅链接（短链接服务除外）生成纯前端实现，无隐私问题。默认提供后端转换服务，隐私担忧者请自行搭建后端服务。"
       });
     },
     confirmUploadConfig() {
@@ -741,7 +768,7 @@ export default {
       return itemValue
     },
     setLocalStorageItem(itemKey, itemValue) {
-      const ttl = process.env.VUE_APP_CACHE_TTL
+      const ttl = import.meta.env.VITE_APP_CACHE_TTL
       const now = +new Date()
 
       let data = {
@@ -751,7 +778,12 @@ export default {
         value: itemValue
       }
       localStorage.setItem(itemKey, JSON.stringify(data))
-    }
+    },
+    copyShortUrl() {
+      navigator.clipboard.writeText(this.curtomShortSubUrl)
+          .then(() => this.$message.success("短链接已复制到剪贴板"))
+          .catch(() => this.$message.error("复制失败"));
+    },
   },
 };
 </script>

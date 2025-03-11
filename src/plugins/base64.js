@@ -1,6 +1,8 @@
-import Vue from 'vue'
-import btoa from 'btoa'
-import atob from 'atob'
+import { Base64 } from 'js-base64'
 
-Vue.prototype.$btoa = (string) => btoa(string)
-Vue.prototype.$atob = (string) => atob(string)
+export default {
+  install: (app) => {
+    app.config.globalProperties.$btoa = Base64.encode
+    app.config.globalProperties.$atob = Base64.decode
+  }
+}
